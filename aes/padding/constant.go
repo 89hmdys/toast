@@ -1,5 +1,7 @@
 package padding
 
+type Type int64
+
 const (
-	PKCS7 = iota //PKCS7 填充
+	PKCS7 Type = iota //PKCS7 填充
 )

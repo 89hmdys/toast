@@ -3,7 +3,7 @@ package aes
 import (
 	. "crypto/aes"
 	"errors"
-	"toast/aes/cipher"
+	ct "toast/aes/cipher"
 	pt "toast/aes/padding"
 )
 
@@ -33,7 +33,7 @@ func NewDefault(key []byte) (Cipher, error) {
 	return &client{padding: &pkcs7{size: block.BlockSize()}, cipher: &cbc{key: key, block: block}}, nil
 }
 
-func New(key []byte, cipherType, paddingType int64) (Cipher, error) {
+func New(key []byte, cipherType ct.Type, paddingType pt.Type) (Cipher, error) {
 
 	block, err := NewCipher(key) //选择加密算法
 	if err != nil {
@@ -55,15 +55,15 @@ func New(key []byte, cipherType, paddingType int64) (Cipher, error) {
 	}
 
 	switch cipherType {
-	case cipher.CBC:
+	case ct.CBC:
 		{
 			c = &cbc{key: key, block: block}
 		}
-	case cipher.CFB:
+	case ct.CFB:
 		{
 			c = &cfb{key: key, block: block}
 		}
-	case cipher.OFB:
+	case ct.OFB:
 		{
 			c = &ofb{key: key, block: block}
 		}

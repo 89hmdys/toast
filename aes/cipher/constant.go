@@ -1,7 +1,9 @@
 package cipher
 
+type Type int64
+
 const (
-	CBC = iota //CBC 模式
-	CFB        //CFB 模式
-	OFB        //
+	CBC Type = iota //CBC 模式
+	CFB             //CFB 模式
+	OFB             //
 )
