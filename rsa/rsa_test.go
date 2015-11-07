@@ -72,7 +72,9 @@ func Test_Sign_DefaultClient(t *testing.T) {
 	fmt.Println(sign)
 
 	signB, err := hex.DecodeString(sign)
-
+	if err != nil {
+		t.Error(err)
+	}
 	errV := cipher.Verify([]byte(src), signB, crypto.SHA256)
 	if errV != nil {
 		t.Error(errV)
