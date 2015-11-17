@@ -3,8 +3,8 @@ package aes
 import (
 	. "crypto/aes"
 	"errors"
-	ct "toast/aes/cipher"
-	pt "toast/aes/padding"
+	ct "github.com/89hmdys/toast/aes/cipher"
+	pt "github.com/89hmdys/toast/aes/padding"
 )
 
 type client struct {

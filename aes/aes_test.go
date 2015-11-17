@@ -3,10 +3,10 @@ package aes_test
 import (
 	"encoding/base64"
 	"fmt"
+	"github.com/89hmdys/toast/aes"
+	"github.com/89hmdys/toast/aes/cipher"
+	"github.com/89hmdys/toast/aes/padding"
 	"testing"
-	"toast/aes"
-	"toast/aes/cipher"
-	"toast/aes/padding"
 )
 
 func Test_DEFAULT(t *testing.T) {
