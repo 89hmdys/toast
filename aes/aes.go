@@ -24,13 +24,29 @@ func (this *client) Decrypt(ciphertext []byte) []byte {
 	return plaintext
 }
 
+//aes加密的秘钥长度必须是128bit(byte[16])、192bit(byte[24])、256bit(byte[32])
+func vaildKey(length int) error {
+	switch length {
+	case 16, 24, 32:
+		break
+	default:
+		return errors.New("illegal")
+	}
+	return nil
+}
+
 //创建默认加密客户端，使用CBC工作模式，PKCS7方式填充
 func NewDefault(key []byte) (Cipher, error) {
+
+	errKey := vaildKey(len(key))
+	if errKey != nil {
+		return nil, errKey
+	}
 	block, err := NewCipher(key) //选择加密算法
 	if err != nil {
 		return nil, err
 	}
-	return &client{padding: &pkcs7{size: block.BlockSize()}, cipher: &cbc{key: key, block: block}}, nil
+	return &client{padding: &pkcs7Padding{size: block.BlockSize()}, cipher: &cbc{key: key, block: block}}, nil
 }
 
 func New(key []byte, cipherType ct.Type, paddingType pt.Type) (Cipher, error) {
@@ -46,7 +62,7 @@ func New(key []byte, cipherType ct.Type, paddingType pt.Type) (Cipher, error) {
 	switch paddingType {
 	case pt.PKCS7:
 		{
-			p = &pkcs7{size: block.BlockSize()}
+			p = &pkcs7Padding{size: block.BlockSize()}
 		}
 	default:
 		{

@@ -1,6 +1,7 @@
 package rsa
 
 import (
+	"bytes"
 	"crypto"
 	"crypto/rand"
 	"crypto/rsa"
@@ -12,10 +13,35 @@ type pkcsClient struct {
 }
 
 func (this *pkcsClient) Encrypt(plaintext []byte) ([]byte, error) {
-	return rsa.EncryptPKCS1v15(rand.Reader, this.publicKey, plaintext)
+
+	blocks := pkcs1Padding(plaintext, this.publicKey.N.BitLen()/8)
+
+	buffer := bytes.Buffer{}
+	for _, block := range blocks {
+		ciphertextPart, err := rsa.EncryptPKCS1v15(rand.Reader, this.publicKey, block)
+		if err != nil {
+			return nil, err
+		}
+		buffer.Write(ciphertextPart)
+	}
+
+	return buffer.Bytes(), nil
 }
+
 func (this *pkcsClient) Decrypt(ciphertext []byte) ([]byte, error) {
-	return rsa.DecryptPKCS1v15(rand.Reader, this.privateKey, ciphertext)
+
+	ciphertextBlocks := unPadding(ciphertext, this.privateKey.N.BitLen()/8)
+
+	buffer := bytes.Buffer{}
+	for _, ciphertextBlock := range ciphertextBlocks {
+		plaintextBlock, err := rsa.DecryptPKCS1v15(rand.Reader, this.privateKey, ciphertextBlock)
+		if err != nil {
+			return nil, err
+		}
+		buffer.Write(plaintextBlock)
+	}
+
+	return buffer.Bytes(), nil
 }
 
 func (this *pkcsClient) Sign(src []byte, hash crypto.Hash) ([]byte, error) {

@@ -1,9 +1,7 @@
 package rsa_test
 
 import (
-	"crypto"
 	"encoding/base64"
-	"encoding/hex"
 	"fmt"
 	"github.com/89hmdys/toast/rsa"
 	"testing"
@@ -43,9 +41,12 @@ z+voPw1y4Urun6IR+QIDAQAB
 
 func Test_DefaultClient(t *testing.T) {
 
-	cp, err := cipher.Encrypt([]byte("b,c"))
+	plant := `您好！如果您要入手广汽传祺GS5！它所搭载就是这款7速g-dct手自一体变速箱！网上有说好的也要说不好的！我给你一个中肯的建议！首先这款车是一款新车，我把它归纳为一款小众的车！这款7速双离合变速箱也是新款！都有待市场考验！如果您入手了！这款变速箱后期维修和保养可是比丰田，本田，大众，日产，马自达这类常见车的维修和保养成本高太多了！因为配件比较难找！我还是不建议入手！请谨慎考虑！`
+
+	cp, err := cipher.Encrypt([]byte(plant))
 	if err != nil {
 		t.Error(err)
+		return
 	}
 	cpStr := base64.URLEncoding.EncodeToString(cp)
 
@@ -54,30 +55,37 @@ func Test_DefaultClient(t *testing.T) {
 	ppBy, err := base64.URLEncoding.DecodeString(cpStr)
 	if err != nil {
 		t.Error(err)
+		return
 	}
 	pp, err := cipher.Decrypt(ppBy)
+
+	if err != nil {
+		t.Error(err)
+		return
+	}
 
 	fmt.Println(string(pp))
 }
 
-func Test_Sign_DefaultClient(t *testing.T) {
-
-	src := "dasfasdfdvcxfdsfasfdsfdsafsadf"
-
-	signBytes, err := cipher.Sign([]byte(src), crypto.SHA256)
-	if err != nil {
-		t.Error(err)
-	}
-	sign := hex.EncodeToString(signBytes)
-	fmt.Println(sign)
-
-	signB, err := hex.DecodeString(sign)
-	if err != nil {
-		t.Error(err)
-	}
-	errV := cipher.Verify([]byte(src), signB, crypto.SHA256)
-	if errV != nil {
-		t.Error(errV)
-	}
-	fmt.Println("verify success")
-}
+//
+//func Test_Sign_DefaultClient(t *testing.T) {
+//
+//	src := "王翔王翔王翔王翔王翔王翔王翔王翔王翔王翔王翔王翔王翔王翔王翔王翔王翔王翔王翔王翔王翔王翔王翔王翔王翔王翔王翔王翔王翔王翔王翔王翔王翔王翔王翔王翔王翔王翔王翔王翔王翔王翔王翔王翔王翔王翔王翔王翔王翔王翔王翔王翔王翔王翔王翔王翔王翔王翔王翔王翔王翔王翔王翔王翔王翔王翔王翔王翔王翔王翔王翔王翔王翔王翔王翔王翔王翔王翔王翔王翔王翔王翔王翔王翔王翔王翔王翔王翔王翔王翔王翔王翔王翔王翔王翔王翔王翔王翔王翔王翔王翔王翔王翔王翔王翔王翔王翔王翔王翔王翔王翔王翔王翔王翔王翔王翔王翔王翔王翔王翔王翔王翔王翔王翔王翔王翔王翔王翔王翔王翔王翔王翔王翔王翔王翔王翔王翔王翔王翔王翔王翔王翔王翔王翔王翔王翔王翔王翔王翔王翔王翔王翔王翔王翔王翔王翔王翔王翔王翔王翔王翔王翔王翔王翔王翔王翔王翔王翔王翔王翔王翔王翔王翔王翔王翔王翔王翔王翔王翔王翔王翔王翔王翔王翔王翔王翔王翔王翔王翔王翔王翔王翔"
+//
+//	signBytes, err := cipher.Sign([]byte(src), crypto.SHA256)
+//	if err != nil {
+//		t.Error(err)
+//	}
+//	sign := hex.EncodeToString(signBytes)
+//	fmt.Println(sign)
+//
+//	signB, err := hex.DecodeString(sign)
+//	if err != nil {
+//		t.Error(err)
+//	}
+//	errV := cipher.Verify([]byte(src), signB, crypto.SHA256)
+//	if errV != nil {
+//		t.Error(errV)
+//	}
+//	fmt.Println("verify success")
+//}
