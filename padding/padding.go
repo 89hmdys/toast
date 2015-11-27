@@ -1,4 +1,4 @@
-package cipher
+package padding
 
 import "bytes"
 
