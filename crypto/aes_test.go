@@ -31,7 +31,9 @@ func Test_DES_CBC(t *testing.T) {
 
 func Test_DES_ECB(t *testing.T) {
 
-	cipher := crypto.DES([]byte("Z'{ru/^e")).ECB()
+	builder := crypto.DES([]byte("Z'{ru/^e")) //创建一个des 加密的builder
+
+	cipher := builder.ECB() //选定工作模式 ，现在支持CBC、CFB、OFB、CTR、ECB 5种工作模式，目前默认使用PKCS7Padding
 
 	plant := `您好！如果您要入手广汽传祺GS5！它所搭载就是这款7速g-dct手自一体变速箱！网上有说好的也要说不好的！我给你一个中肯的建议！首先这款车是一款新车，我把它归纳为一款小众的车！这款7速双离合变速箱也是新款！都有待市场考验！如果您入手了！这款变速箱后期维修和保养可是比丰田，本田，大众，日产，马自达这类常见车的维修和保养成本高太多了！因为配件比较难找！我还是不建议入手！请谨慎考虑！`
 
@@ -46,6 +48,7 @@ func Test_DES_ECB(t *testing.T) {
 		t.Error(err)
 	}
 	pp := cipher.Decrypt(ppBy)
+
 	fmt.Println(string(pp))
 
 	fmt.Println("Test_DES_ECB ok")

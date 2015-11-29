@@ -9,8 +9,7 @@ type Builder interface {
 	CFB() Cipher
 	OFB() Cipher
 	CTR() Cipher
-	//默认使用电子密码本工作模式
-	Default() Cipher
+	ECB() Cipher
 }
 
 func NewBuilder(block cc.Block, iv []byte) Builder {
