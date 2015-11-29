@@ -1,4 +1,4 @@
-package encryption
+package crypto
 
 import (
 	"crypto/aes"
@@ -22,8 +22,4 @@ func AES(key []byte) Builder {
 		panic(err)
 	}
 	return NewBuilder(block, key[:block.BlockSize()])
-}
-
-func RSA(privateKey []byte, publicKey []byte) {
-
 }

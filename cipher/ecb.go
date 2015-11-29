@@ -1,11 +1,11 @@
 package cipher
 
 import (
-	"crypto/cipher"
+	. "crypto/cipher"
 )
 
 type ecb struct {
-	block     cipher.Block
+	block     Block
 	blockSize int
 }
 
@@ -43,10 +43,10 @@ func (this *ecbDecrypter) CryptBlocks(dst, src []byte) {
 	}
 }
 
-func NewECBEncrypter(block cipher.Block) cipher.BlockMode {
+func NewECBEncrypter(block Block) BlockMode {
 	return &ecbEncrypter{block: block, blockSize: block.BlockSize()}
 }
 
-func NewECBDecrypter(block cipher.Block) cipher.BlockMode {
+func NewECBDecrypter(block Block) BlockMode {
 	return &ecbDecrypter{block: block, blockSize: block.BlockSize()}
 }
