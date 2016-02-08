@@ -2,18 +2,29 @@ package cipher
 
 import "bytes"
 
-type paddingFunc func(src []byte, blockSize int) []byte
+type Padding interface {
+	Padding(src []byte, blockSize int) []byte
+	UnPadding(src []byte) []byte
+}
 
-type unPaddingFunc func(src []byte) []byte
+type padding struct {
 
-func pkcs7Padding(src []byte, blockSize int) []byte {
-	padding := blockSize - len(src)%blockSize
+}
+
+type pkcs57Padding  padding
+
+func NewPKCS57Padding() Padding {
+	return &pkcs57Padding{}
+}
+
+func (p *pkcs57Padding) Padding(src []byte, blockSize int) []byte {
+	padding := blockSize - len(src) % blockSize
 	padtext := bytes.Repeat([]byte{byte(padding)}, padding)
 	return append(src, padtext...)
 }
 
-func pkcs7UnPadding(src []byte) []byte {
+func (p *pkcs57Padding) UnPadding(src []byte) []byte {
 	length := len(src)
-	unpadding := int(src[length-1])
+	unpadding := int(src[length - 1])
 	return src[:(length - unpadding)]
 }

@@ -9,54 +9,51 @@ type Cipher interface {
 	Decrypt(src []byte) []byte
 }
 
-func NewBlockCipher(padding paddingFunc, unPadding unPaddingFunc, encrypt BlockMode, decrypt BlockMode) Cipher {
+func NewBlockCipher(padding Padding, encrypt, decrypt BlockMode) Cipher {
 	return &blockCipher{
-		blockSize: encrypt.BlockSize(),
-		encrypt:   encrypt.CryptBlocks,
-		decrypt:   decrypt.CryptBlocks,
-		padding:   padding,
-		unPadding: unPadding}
+		encrypt:   encrypt,
+		decrypt:   decrypt,
+		padding:   padding}
+}
+
+type blockCipher struct {
+	padding Padding
+	encrypt BlockMode
+	decrypt BlockMode
+}
+
+func (this *blockCipher) Encrypt(plaintext []byte) []byte {
+	plaintext = this.padding.Padding(plaintext, this.encrypt.BlockSize())
+	ciphertext := make([]byte, len(plaintext))
+	this.encrypt.CryptBlocks(ciphertext, plaintext)
+	return ciphertext
+}
+
+func (this *blockCipher) Decrypt(ciphertext []byte) []byte {
+	plaintext := make([]byte, len(ciphertext))
+	this.decrypt.CryptBlocks(plaintext, ciphertext)
+	plaintext = this.padding.UnPadding(plaintext)
+	return plaintext
 }
 
 func NewStreamCipher(encrypt Stream, decrypt Stream) Cipher {
 	return &streamCipher{
-		encrypt: encrypt.XORKeyStream,
-		decrypt: decrypt.XORKeyStream}
-}
-
-type blockCipher struct {
-	blockSize int
-	padding   paddingFunc
-	unPadding unPaddingFunc
-	encrypt   func(ciphertext, plaintext []byte)
-	decrypt   func(plaintext, ciphertext []byte)
-}
-
-func (this *blockCipher) Encrypt(plaintext []byte) []byte {
-	plaintext = this.padding(plaintext, this.blockSize)
-	ciphertext := make([]byte, len(plaintext))
-	this.encrypt(ciphertext, plaintext)
-	return ciphertext
-}
-func (this *blockCipher) Decrypt(ciphertext []byte) []byte {
-	plaintext := make([]byte, len(ciphertext))
-	this.decrypt(plaintext, ciphertext)
-	plaintext = this.unPadding(plaintext)
-	return plaintext
+		encrypt: encrypt,
+		decrypt: decrypt}
 }
 
 type streamCipher struct {
-	encrypt func(dst, src []byte)
-	decrypt func(dst, src []byte)
+	encrypt Stream
+	decrypt Stream
 }
 
 func (this *streamCipher) Encrypt(plaintext []byte) []byte {
 	ciphertext := make([]byte, len(plaintext))
-	this.encrypt(ciphertext, plaintext)
+	this.encrypt.XORKeyStream(ciphertext, plaintext)
 	return ciphertext
 }
 func (this *streamCipher) Decrypt(ciphertext []byte) []byte {
 	plaintext := make([]byte, len(ciphertext))
-	this.decrypt(plaintext, ciphertext)
+	this.decrypt.XORKeyStream(plaintext, ciphertext)
 	return plaintext
 }

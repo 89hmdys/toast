@@ -9,9 +9,11 @@ import (
 	"github.com/89hmdys/toast/cipher"
 )
 
-func Test_DES_ECB(t *testing.T) {
+var key="|-8xrgPfS)Aa4xtAIL^k5qX)$Y5Rim9Z"
 
-	cipher, err := crypto.NewDES([]byte("Z'{ru/^e"))
+func Test_AES_ECB(t *testing.T) {
+
+	cipher, err := crypto.NewAES([]byte(key))
 	if err != nil {
 		t.Error(err)
 		return
@@ -32,13 +34,13 @@ func Test_DES_ECB(t *testing.T) {
 	pp := cipher.Decrypt(ppBy)
 	fmt.Println(string(pp))
 
-	fmt.Println("Test_DES_CBC ok")
+	fmt.Println("Test_AES_CBC ok")
 }
 
-func Test_DES_CBC(t *testing.T) {
+func Test_AES_CBC(t *testing.T) {
 
 	mode := cipher.NewCBCMode()
-	cipher, err := crypto.NewDESWith([]byte("Z'{ru/^e"), mode) //创建一个des 加密的builder
+	cipher, err := crypto.NewAESWith([]byte(key), mode) //创建一个AES 加密的builder
 	if err != nil {
 		t.Error(err)
 		return
@@ -60,14 +62,14 @@ func Test_DES_CBC(t *testing.T) {
 
 	fmt.Println(string(pp))
 
-	fmt.Println("Test_DES_ECB ok")
+	fmt.Println("Test_AES_ECB ok")
 }
 
-func Test_DES_CFB(t *testing.T) {
+func Test_AES_CFB(t *testing.T) {
 
 	mode := cipher.NewCFBMode()
 
-	cipher, err := crypto.NewDESWith([]byte("Z'{ru/^e"), mode)
+	cipher, err := crypto.NewAESWith([]byte(key), mode)
 	if err != nil {
 		t.Error(err)
 		return
@@ -88,14 +90,14 @@ func Test_DES_CFB(t *testing.T) {
 	pp := cipher.Decrypt(ppBy)
 	fmt.Println(string(pp))
 
-	fmt.Println("Test_DES_CFB ok")
+	fmt.Println("Test_AES_CFB ok")
 }
 
-func Test_DES_OFB(t *testing.T) {
+func Test_AES_OFB(t *testing.T) {
 
 	mode := cipher.NewOFBMode()
 
-	cipher, err := crypto.NewDESWith([]byte("Z'{ru/^e"), mode)
+	cipher, err := crypto.NewAESWith([]byte(key), mode)
 	if err != nil {
 		t.Error(err)
 		return
@@ -116,14 +118,14 @@ func Test_DES_OFB(t *testing.T) {
 	pp := cipher.Decrypt(ppBy)
 	fmt.Println(string(pp))
 
-	fmt.Println("Test_DES_OFB ok")
+	fmt.Println("Test_AES_OFB ok")
 }
 
-func Test_DES_CTR(t *testing.T) {
+func Test_AES_CTR(t *testing.T) {
 
 	mode := cipher.NewCTRMode()
 
-	cipher, err := crypto.NewDESWith([]byte("Z'{ru/^e"), mode)
+	cipher, err := crypto.NewAESWith([]byte(key), mode)
 	if err != nil {
 		t.Error(err)
 		return
@@ -144,5 +146,5 @@ func Test_DES_CTR(t *testing.T) {
 	pp := cipher.Decrypt(ppBy)
 	fmt.Println(string(pp))
 
-	fmt.Println("Test_DES_CTR ok")
+	fmt.Println("Test_AES_CTR ok")
 }
