@@ -2,14 +2,29 @@ package cipher
 
 import . "crypto/cipher"
 
-/*
-AES/DES 加密算法有多种工作模式，可分为块模式/流模式，块模式需要填充待加密内容到秘钥的整数倍数，流模式不需要填充。
-作者：白苏
-最初版本：0.1beta
-*/
 
+/*
+介绍:CipherMode为不同的工作模式提供了统一的接口来设置填充方式，创建Cipher。
+    对于流模式，SetPadding是个空方法，不起任何作用。
+
+作者:Alex
+版本:release-1.1
+*/
 type CipherMode  interface {
+	/*
+	设置填充方式,仅块模式需要填充。
+
+	作者:Alex
+	版本:release-1.1
+	*/
 	SetPadding(padding Padding) CipherMode
+
+	/*
+	创建Cipher
+
+	作者:Alex
+	版本:release-1.1
+	*/
 	Cipher(block Block, iv []byte) Cipher
 }
 

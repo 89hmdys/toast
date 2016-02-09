@@ -4,11 +4,33 @@ import (
 	. "crypto/cipher"
 )
 
+
+/*
+介绍:Cipher提供了统一的接口对数据进行加密/解密操作.
+
+作者:Alex
+版本:release-1.1
+*/
 type Cipher interface {
+	/*
+	介绍:加密数据
+	作者:Alex
+        版本:release1.1
+	*/
 	Encrypt(src []byte) []byte
+	/*
+	介绍:解密数据
+	作者:Alex
+        版本:release1.1
+	*/
 	Decrypt(src []byte) []byte
 }
 
+/*
+介绍:新建块加密
+作者:Alex
+版本:release1.1
+*/
 func NewBlockCipher(padding Padding, encrypt, decrypt BlockMode) Cipher {
 	return &blockCipher{
 		encrypt:   encrypt,
@@ -22,20 +44,25 @@ type blockCipher struct {
 	decrypt BlockMode
 }
 
-func (this *blockCipher) Encrypt(plaintext []byte) []byte {
-	plaintext = this.padding.Padding(plaintext, this.encrypt.BlockSize())
+func (blockCipher *blockCipher) Encrypt(plaintext []byte) []byte {
+	plaintext = blockCipher.padding.Padding(plaintext, blockCipher.encrypt.BlockSize())
 	ciphertext := make([]byte, len(plaintext))
-	this.encrypt.CryptBlocks(ciphertext, plaintext)
+	blockCipher.encrypt.CryptBlocks(ciphertext, plaintext)
 	return ciphertext
 }
 
-func (this *blockCipher) Decrypt(ciphertext []byte) []byte {
+func (blockCipher *blockCipher) Decrypt(ciphertext []byte) []byte {
 	plaintext := make([]byte, len(ciphertext))
-	this.decrypt.CryptBlocks(plaintext, ciphertext)
-	plaintext = this.padding.UnPadding(plaintext)
+	blockCipher.decrypt.CryptBlocks(plaintext, ciphertext)
+	plaintext = blockCipher.padding.UnPadding(plaintext)
 	return plaintext
 }
 
+/*
+介绍:新建流加密
+作者:Alex
+版本:release1.1
+*/
 func NewStreamCipher(encrypt Stream, decrypt Stream) Cipher {
 	return &streamCipher{
 		encrypt: encrypt,
@@ -47,13 +74,13 @@ type streamCipher struct {
 	decrypt Stream
 }
 
-func (this *streamCipher) Encrypt(plaintext []byte) []byte {
+func (streamCipher *streamCipher) Encrypt(plaintext []byte) []byte {
 	ciphertext := make([]byte, len(plaintext))
-	this.encrypt.XORKeyStream(ciphertext, plaintext)
+	streamCipher.encrypt.XORKeyStream(ciphertext, plaintext)
 	return ciphertext
 }
-func (this *streamCipher) Decrypt(ciphertext []byte) []byte {
+func (streamCipher *streamCipher) Decrypt(ciphertext []byte) []byte {
 	plaintext := make([]byte, len(ciphertext))
-	this.decrypt.XORKeyStream(plaintext, ciphertext)
+	streamCipher.decrypt.XORKeyStream(plaintext, ciphertext)
 	return plaintext
 }
