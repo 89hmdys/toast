@@ -40,12 +40,12 @@ func grouping(src []byte, size int) [][]byte {
 	} else {
 		for len(src) != 0 {
 			v := src[:size]
-			groups = append(groups, v)
-			src = src[size:]
 			if len(src) < size {
 				groups = append(groups, src)
 				break
 			}
+			groups = append(groups, v)
+			src = src[size:]
 		}
 	}
 

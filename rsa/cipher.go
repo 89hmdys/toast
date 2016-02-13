@@ -40,17 +40,17 @@ func (cipher *cipher) Encrypt(plainText []byte) ([]byte, error) {
 }
 
 func (cipher *cipher) Decrypt(cipherText []byte) ([]byte, error) {
-	//block := GroupingWithNOPadding(cipherText, cipher.key.Modulus())
-	//buffer := bytes.Buffer{}
-	//for _, cipherTextBlock := range block.Value {
-	plainText, err := rsa.DecryptPKCS1v15(rand.Reader, cipher.key.PrivateKey(), cipherText)
-	if err != nil {
-		logrus.Error(err)
-		return nil, err
+	groups := grouping(cipherText, cipher.key.Modulus())
+	buffer := bytes.Buffer{}
+	for _, cipherTextBlock := range groups {
+		plainText, err := rsa.DecryptPKCS1v15(rand.Reader, cipher.key.PrivateKey(), cipherTextBlock)
+		if err != nil {
+			logrus.Error(err)
+			return nil, err
+		}
+		buffer.Write(plainText)
 	}
-	//buffer.Write(plainText)
-	//}
-	return plainText, nil
+	return buffer.Bytes(), nil
 }
 
 func (cipher *cipher) Sign(src []byte, hash crypto.Hash) ([]byte, error) {

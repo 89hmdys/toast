@@ -2,9 +2,10 @@ package crypto
 
 import (
 	"crypto/aes"
-//"crypto/des"
-	. "github.com/89hmdys/toast/cipher"
 	"crypto/des"
+
+	. "github.com/89hmdys/toast/cipher"
+	"github.com/89hmdys/toast/rsa"
 )
 
 /*
@@ -62,4 +63,25 @@ func NewDESWith(key []byte, mode CipherMode) (Cipher, error) {
 		return nil, err
 	}
 	return mode.Cipher(block, key[:block.BlockSize()]), nil
+}
+
+/*
+介绍:创建RSACipher,默认使用pkcs1 padding.
+
+作者:Alex
+版本:release-1.1
+*/
+func NewRSA(key rsa.Key) (rsa.Cipher, error) {
+	padding := rsa.NewPKCS1Padding(key.Modulus())
+	return rsa.NewCipher(key, padding), nil
+}
+
+/*
+介绍:根据指定的key,和padding来创建RSACipher
+
+作者:Alex
+版本:release-1.1
+*/
+func NewRSAWith(key rsa.Key, padding rsa.Padding) (rsa.Cipher, error) {
+	return rsa.NewCipher(key, padding), nil
 }
