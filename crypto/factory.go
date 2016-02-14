@@ -66,7 +66,7 @@ func NewDESWith(key []byte, mode CipherMode) (Cipher, error) {
 }
 
 /*
-介绍:创建RSACipher,默认使用pkcs1 padding.
+介绍:创建RSACipher,默认使用pkcs1 padding,pkcs#1v1.5 加密解密，pkcs#1v1.5签名验证.
 
 作者:Alex
 版本:release-1.1
