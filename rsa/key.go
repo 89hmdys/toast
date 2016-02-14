@@ -6,6 +6,7 @@ import (
 	"encoding/pem"
 	"encoding/base64"
 	"errors"
+	"strings"
 )
 
 type Key interface {
@@ -28,10 +29,16 @@ func ParsePKCS8Key(publicKey, privateKey []byte) (Key, error) {
 }
 
 func ParsePKCS8KeyWithBase64(publicKey, privateKey string) (Key, error) {
+
+	publicKey = strings.TrimSpace(publicKey)
+
 	puk, err := base64.StdEncoding.DecodeString(publicKey)
 	if err != nil {
 		return nil, err
 	}
+
+	privateKey = strings.TrimSpace(privateKey)
+
 	prk, err := base64.StdEncoding.DecodeString(privateKey)
 	if err != nil {
 		return nil, err
@@ -41,12 +48,20 @@ func ParsePKCS8KeyWithBase64(publicKey, privateKey string) (Key, error) {
 
 func ParsePKCS8KeyWithPEM(publicKey, privateKey string) (Key, error) {
 
-	puk, _ := pem.Decode([]byte(publicKey))
-	prk, _ := pem.Decode([]byte(privateKey))
+	publicKey = strings.TrimSpace(publicKey)
 
-	if puk == nil || prk == nil {
-		return nil, errors.New("is not pem formate")
+	puk, _ := pem.Decode([]byte(publicKey))
+	if puk == nil {
+		return nil, errors.New("publicKey is not pem formate")
 	}
+
+	privateKey = strings.TrimSpace(privateKey)
+
+	prk, _ := pem.Decode([]byte(privateKey))
+	if prk == nil {
+		return nil, errors.New("privateKey is not pem formate")
+	}
+
 	return ParsePKCS8Key(puk.Bytes, prk.Bytes)
 }
 
