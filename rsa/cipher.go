@@ -2,9 +2,7 @@ package rsa
 
 import (
 	"crypto"
-	"crypto/rsa"
 	"bytes"
-	"crypto/rand"
 
 	"github.com/Sirupsen/logrus"
 )
@@ -16,20 +14,22 @@ type Cipher interface {
 	Verify(src []byte, sign []byte, hash crypto.Hash) error
 }
 
-func NewCipher(key Key, padding Padding) Cipher {
-	return &cipher{key:key, padding:padding}
+func NewCipher(key Key, padding Padding, cipherMode CipherMode, signMode SignMode) Cipher {
+	return &cipher{key:key, padding:padding, cipherMode:cipherMode, sign:signMode}
 }
 
 type cipher struct {
-	key     Key
-	padding Padding
+	key        Key
+	cipherMode CipherMode
+	sign       SignMode
+	padding    Padding
 }
 
 func (cipher *cipher) Encrypt(plainText []byte) ([]byte, error) {
 	groups := cipher.padding.Padding(plainText)
 	buffer := bytes.Buffer{}
 	for _, plainTextBlock := range groups {
-		cipherText, err := rsa.EncryptPKCS1v15(rand.Reader, cipher.key.PublicKey(), plainTextBlock)
+		cipherText, err := cipher.cipherMode.Encrypt(plainTextBlock, cipher.key.PublicKey())
 		if err != nil {
 			logrus.Error(err)
 			return nil, err
@@ -40,10 +40,13 @@ func (cipher *cipher) Encrypt(plainText []byte) ([]byte, error) {
 }
 
 func (cipher *cipher) Decrypt(cipherText []byte) ([]byte, error) {
+	/*
+	BUG记录：传入的cipherText为空数组时，则会导致解密失败，因此对数据分组的算法要仔细检查。
+	*/
 	groups := grouping(cipherText, cipher.key.Modulus())
 	buffer := bytes.Buffer{}
 	for _, cipherTextBlock := range groups {
-		plainText, err := rsa.DecryptPKCS1v15(rand.Reader, cipher.key.PrivateKey(), cipherTextBlock)
+		plainText, err := cipher.cipherMode.Decrypt(cipherTextBlock, cipher.key.PrivateKey())
 		if err != nil {
 			logrus.Error(err)
 			return nil, err
@@ -54,15 +57,9 @@ func (cipher *cipher) Decrypt(cipherText []byte) ([]byte, error) {
 }
 
 func (cipher *cipher) Sign(src []byte, hash crypto.Hash) ([]byte, error) {
-	h := hash.New()
-	h.Write(src)
-	hashed := h.Sum(nil)
-	return rsa.SignPKCS1v15(rand.Reader, cipher.key.PrivateKey(), hash, hashed)
+	return cipher.sign.Sign(src, hash, cipher.key.PrivateKey())
 }
 
 func (cipher *cipher) Verify(src []byte, sign []byte, hash crypto.Hash) error {
-	h := hash.New()
-	h.Write(src)
-	hashed := h.Sum(nil)
-	return rsa.VerifyPKCS1v15(cipher.key.PublicKey(), hash, hashed, sign)
+	return cipher.sign.Verify(src, sign, hash, cipher.key.PublicKey())
 }

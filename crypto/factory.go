@@ -73,7 +73,9 @@ func NewDESWith(key []byte, mode CipherMode) (Cipher, error) {
 */
 func NewRSA(key rsa.Key) (rsa.Cipher, error) {
 	padding := rsa.NewPKCS1Padding(key.Modulus())
-	return rsa.NewCipher(key, padding), nil
+	cipherMode := rsa.NewPKCS1v15Cipher()
+	signMode := rsa.NewPKCS1v15Sign()
+	return rsa.NewCipher(key, padding, cipherMode, signMode), nil
 }
 
 /*
@@ -82,6 +84,6 @@ func NewRSA(key rsa.Key) (rsa.Cipher, error) {
 作者:Alex
 版本:release-1.1
 */
-func NewRSAWith(key rsa.Key, padding rsa.Padding) (rsa.Cipher, error) {
-	return rsa.NewCipher(key, padding), nil
+func NewRSAWith(key rsa.Key, padding rsa.Padding, cipherMode rsa.CipherMode, signMode rsa.SignMode) (rsa.Cipher, error) {
+	return rsa.NewCipher(key, padding, cipherMode, signMode), nil
 }
