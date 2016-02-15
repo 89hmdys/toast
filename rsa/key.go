@@ -6,6 +6,8 @@ import (
 	"encoding/pem"
 	"encoding/base64"
 	"errors"
+	"strings"
+	"io/ioutil"
 )
 
 type Key interface {
@@ -39,7 +41,7 @@ func ParsePKCS8KeyWithBase64(publicKey, privateKey string) (Key, error) {
 	return ParsePKCS8Key(puk, prk)
 }
 
-func ParsePKCS8KeyWithPEM(publicKey, privateKey string) (Key, error) {
+func ParsePKCS8KeyWithPEMEncoding(publicKey, privateKey string) (Key, error) {
 
 	puk, _ := pem.Decode([]byte(publicKey))
 	prk, _ := pem.Decode([]byte(privateKey))
@@ -47,6 +49,37 @@ func ParsePKCS8KeyWithPEM(publicKey, privateKey string) (Key, error) {
 	if puk == nil || prk == nil {
 		return nil, errors.New("is not pem formate")
 	}
+	return ParsePKCS8Key(puk.Bytes, prk.Bytes)
+}
+
+func LoadPKCS8KeyFromPEMFile(publicKeyFilePath, privateKeyFilePath string) (Key, error) {
+
+	//TODO 断言如果入参为"" ，则直接报错
+
+	publicKeyFilePath = strings.TrimSpace(publicKeyFilePath)
+
+	pukBytes, err := ioutil.ReadFile(publicKeyFilePath)
+	if err != nil {
+		return nil, err
+	}
+
+	puk, _ := pem.Decode(pukBytes)
+	if puk == nil {
+		return nil, errors.New("publicKey is not pem formate")
+	}
+
+	privateKeyFilePath = strings.TrimSpace(privateKeyFilePath)
+
+	prkBytes, err := ioutil.ReadFile(privateKeyFilePath)
+	if err != nil {
+		return nil, err
+	}
+
+	prk, _ := pem.Decode(prkBytes)
+	if prk == nil {
+		return nil, errors.New("privateKey is not pem formate")
+	}
+
 	return ParsePKCS8Key(puk.Bytes, prk.Bytes)
 }
 
