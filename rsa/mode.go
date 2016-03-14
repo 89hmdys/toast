@@ -2,8 +2,8 @@ package rsa
 
 import (
 	"crypto"
-	"crypto/rsa"
 	"crypto/rand"
+	"crypto/rsa"
 	"errors"
 )
 
@@ -47,7 +47,7 @@ func NewPKCS1v15Sign() SignMode {
 	return new(pkcs1v15Sign)
 }
 
-func (pkcs1v15 *pkcs1v15Sign)Sign(src []byte, hash crypto.Hash, prk *rsa.PrivateKey) ([]byte, error) {
+func (pkcs1v15 *pkcs1v15Sign) Sign(src []byte, hash crypto.Hash, prk *rsa.PrivateKey) ([]byte, error) {
 	if !hash.Available() {
 		return nil, errors.New("unsupport hash type")
 	}
