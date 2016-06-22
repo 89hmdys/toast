@@ -21,9 +21,10 @@ func Test_LoadFromPEMFile(t *testing.T) {
 	其他都还好海鲜炒饭的大虾不新鲜，其他都还好海鲜炒饭的大虾不新鲜，其他都还好海鲜炒饭的大虾不新鲜，其他都还好海鲜炒饭的大虾不新鲜，
 	其他都还好海鲜炒饭的大虾不新鲜，其他都还好.`
 
-	key, err := rsa.LoadPKCS8KeyFromPEMFile(
+	key, err := rsa.LoadKeyFromPEMFile(
 		`/Users/alex/Documents/go/src/toast/crypto/rsa_public_key.pem`,
-		`/Users/alex/Documents/go/src/toast/crypto/rsa_private_key.pem`)
+		`/Users/alex/Documents/go/src/toast/crypto/rsa_private_key.pem`,
+		rsa.ParsePKCS8Key)
 	if err != nil {
 		t.Error(err)
 		return

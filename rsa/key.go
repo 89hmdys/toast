@@ -5,8 +5,8 @@ import (
 	"crypto/x509"
 	"encoding/pem"
 	"errors"
-	"strings"
 	"io/ioutil"
+	"strings"
 )
 
 type Key interface {
@@ -25,7 +25,7 @@ func ParsePKCS8Key(publicKey, privateKey []byte) (Key, error) {
 	if err != nil {
 		return nil, err
 	}
-	return &key{publicKey:puk.(*rsa.PublicKey), privateKey:prk.(*rsa.PrivateKey)}, nil
+	return &key{publicKey: puk.(*rsa.PublicKey), privateKey: prk.(*rsa.PrivateKey)}, nil
 }
 
 func ParsePKCS1Key(publicKey, privateKey []byte) (Key, error) {
@@ -37,10 +37,10 @@ func ParsePKCS1Key(publicKey, privateKey []byte) (Key, error) {
 	if err != nil {
 		return nil, err
 	}
-	return &key{publicKey:puk.(*rsa.PublicKey), privateKey:prk.(*rsa.PrivateKey)}, nil
+	return &key{publicKey: puk.(*rsa.PublicKey), privateKey: prk}, nil
 }
 
-func LoadPKCS8KeyFromPEMFile(publicKeyFilePath, privateKeyFilePath string) (Key, error) {
+func LoadKeyFromPEMFile(publicKeyFilePath, privateKeyFilePath string, ParseKey func([]byte, []byte) (Key, error)) (Key, error) {
 
 	//TODO 断言如果入参为"" ，则直接报错
 
@@ -68,38 +68,7 @@ func LoadPKCS8KeyFromPEMFile(publicKeyFilePath, privateKeyFilePath string) (Key,
 		return nil, errors.New("privateKey is not pem formate")
 	}
 
-	return ParsePKCS8Key(puk.Bytes, prk.Bytes)
-}
-
-func LoadPKCS1KeyFromPEMFile(publicKeyFilePath, privateKeyFilePath string) (Key, error) {
-
-	//TODO 断言如果入参为"" ，则直接报错
-
-	publicKeyFilePath = strings.TrimSpace(publicKeyFilePath)
-
-	pukBytes, err := ioutil.ReadFile(publicKeyFilePath)
-	if err != nil {
-		return nil, err
-	}
-
-	puk, _ := pem.Decode(pukBytes)
-	if puk == nil {
-		return nil, errors.New("publicKey is not pem formate")
-	}
-
-	privateKeyFilePath = strings.TrimSpace(privateKeyFilePath)
-
-	prkBytes, err := ioutil.ReadFile(privateKeyFilePath)
-	if err != nil {
-		return nil, err
-	}
-
-	prk, _ := pem.Decode(prkBytes)
-	if prk == nil {
-		return nil, errors.New("privateKey is not pem formate")
-	}
-
-	return ParsePKCS1Key(puk.Bytes, prk.Bytes)
+	return ParseKey(puk.Bytes, prk.Bytes)
 }
 
 type key struct {
