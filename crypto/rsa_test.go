@@ -22,7 +22,7 @@ func Test_LoadFromPEMFile(t *testing.T) {
 		t.Error(err)
 		return
 	}
-
+	//
 	cipher, err := crypto.NewRSA(key)
 	if err != nil {
 		t.Error(err)

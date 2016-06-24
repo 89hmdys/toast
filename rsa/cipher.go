@@ -1,9 +1,10 @@
 package rsa
 
 import (
-	"crypto"
 	"bytes"
+	"crypto"
 
+	"errors"
 	"github.com/Sirupsen/logrus"
 )
 
@@ -15,7 +16,7 @@ type Cipher interface {
 }
 
 func NewCipher(key Key, padding Padding, cipherMode CipherMode, signMode SignMode) Cipher {
-	return &cipher{key:key, padding:padding, cipherMode:cipherMode, sign:signMode}
+	return &cipher{key: key, padding: padding, cipherMode: cipherMode, sign: signMode}
 }
 
 type cipher struct {
@@ -40,8 +41,11 @@ func (cipher *cipher) Encrypt(plainText []byte) ([]byte, error) {
 }
 
 func (cipher *cipher) Decrypt(cipherText []byte) ([]byte, error) {
+	if len(cipherText) == 0 {
+		return nil, errors.New("密文不能为空")
+	}
 	/*
-	BUG记录：传入的cipherText为空数组时，则会导致解密失败，因此对数据分组的算法要仔细检查。
+		BUG记录：传入的cipherText为空数组时，则会导致解密失败，因此对数据分组的算法要仔细检查。
 	*/
 	groups := grouping(cipherText, cipher.key.Modulus())
 	buffer := bytes.Buffer{}

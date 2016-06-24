@@ -5,7 +5,6 @@ import (
 	"crypto/rand"
 	"crypto/rsa"
 	"errors"
-	"hash"
 )
 
 type CipherMode interface {
