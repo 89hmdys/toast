@@ -5,7 +5,7 @@ import (
 	"crypto"
 
 	"errors"
-	"github.com/Sirupsen/logrus"
+	"github.com/sirupsen/logrus"
 )
 
 type Cipher interface {
