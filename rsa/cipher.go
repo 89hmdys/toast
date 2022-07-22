@@ -5,7 +5,6 @@ import (
 	"crypto"
 
 	"errors"
-
 	"github.com/sirupsen/logrus"
 )
 
