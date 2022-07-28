@@ -45,7 +45,8 @@ type blockCipher struct {
 }
 
 func (blockCipher *blockCipher) Encrypt(plaintext []byte) []byte {
-	plaintext = blockCipher.padding.Padding(plaintext, blockCipher.encrypt.BlockSize())
+	//TODO: modify By Eason ECB nopadding
+	//plaintext = blockCipher.padding.Padding(plaintext, blockCipher.encrypt.BlockSize())
 	ciphertext := make([]byte, len(plaintext))
 	blockCipher.encrypt.CryptBlocks(ciphertext, plaintext)
 	return ciphertext
