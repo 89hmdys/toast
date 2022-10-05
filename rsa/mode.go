@@ -4,7 +4,9 @@ import (
 	"crypto"
 	"crypto/rand"
 	"crypto/rsa"
+	"crypto/sha1"
 	"errors"
+	"hash"
 )
 
 type CipherMode interface {
@@ -64,18 +66,18 @@ func (pkcs1v15 *pkcs1v15Sign) Verify(src []byte, sign []byte, hash crypto.Hash, 
 	return rsa.VerifyPKCS1v15(puk, hash, hashed, sign)
 }
 
-//type oaepCipher struct {
-//	h hash.Hash
-//}
-//
-//func NewOAEPCipher() CipherMode {
-//	return new(oaepCipher)
-//}
-//
-//func (oaep *oaepCipher) Encrypt(plainText []byte, puk *rsa.PublicKey) ([]byte, error) {
-//	return rsa.EncryptOAEP(oaep.h, rand.Reader, puk, plainText, make([]byte, 0))
-//}
-//
-//func (oaep *oaepCipher) Decrypt(cipherText []byte, prk *rsa.PrivateKey) ([]byte, error) {
-//	return rsa.DecryptOAEP(oaep.h, rand.Reader, prk, cipherText, make([]byte, 0))
-//}
+type oaepCipher struct {
+	h hash.Hash
+}
+
+func NewOAEPCipher() CipherMode {
+	return &oaepCipher{h: sha1.New()}
+}
+
+func (oaep *oaepCipher) Encrypt(plainText []byte, puk *rsa.PublicKey) ([]byte, error) {
+	return rsa.EncryptOAEP(oaep.h, rand.Reader, puk, plainText, make([]byte, 0))
+}
+
+func (oaep *oaepCipher) Decrypt(cipherText []byte, prk *rsa.PrivateKey) ([]byte, error) {
+	return rsa.DecryptOAEP(oaep.h, rand.Reader, prk, cipherText, make([]byte, 0))
+}
